@@ -7,3 +7,6 @@
 [submodule "MakerClone/lib/openzeppelin-contracts"]
 	path = MakerClone/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "MakerClone/lib/foundry-chainlink-toolkit"]
+	path = MakerClone/lib/foundry-chainlink-toolkit
+	url = https://github.com/smartcontractkit/foundry-chainlink-toolkit
