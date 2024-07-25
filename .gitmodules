@@ -1,0 +1,3 @@
+[submodule "MakerClone/lib/forge-std"]
+	path = MakerClone/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
