@@ -7,7 +7,7 @@
 // threshold 150% (collateral value / dai value)
 pragma solidity ^0.8.19;
 
-import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {Dai} from "./Dai.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
