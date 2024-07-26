@@ -13,3 +13,6 @@
 [submodule "MakerClone/lib/chainlink-brownie-contracts"]
 	path = MakerClone/lib/chainlink-brownie-contracts
 	url = https://github.com/smartcontractkit/chainlink-brownie-contracts
+[submodule "Uniswapv2Clone/lib/openzeppelin-contracts"]
+	path = Uniswapv2Clone/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
