@@ -20,11 +20,34 @@ contract PairTest is Test {
         pair.initialize(token0, token1);
     }
 
-    function testSwap() public {
+    function testMintInitialLiquidity() public {
         // Add initial liquidity
-        MockERC20(token0).mint(address(pair), 10 ether);
-        MockERC20(token1).mint(address(pair), 10 ether);
-        pair.updateReserves(10 ether, 10 ether);
+        MockERC20(token0).mint(address(this), 10 ether);
+        MockERC20(token1).mint(address(this), 10 ether);
+        IERC20(token0).transfer(address(pair), 10 ether);
+        IERC20(token1).transfer(address(pair), 10 ether);
+
+        uint liquidity = pair.mint(address(this));
+
+        assertGt(liquidity, 0, "Should have minted liquidity tokens");
+        assertEq(
+            pair.balanceOf(address(this)),
+            liquidity,
+            "Liquidity balance should match minted amount"
+        );
+
+        (uint112 reserve0, uint112 reserve1, ) = pair.getReserves();
+        assertEq(reserve0, 10 ether, "Reserve0 should be 10 ether");
+        assertEq(reserve1, 10 ether, "Reserve1 should be 10 ether");
+    }
+
+    function testSwap() public {
+        // First add liquidity
+        MockERC20(token0).mint(address(this), 10 ether);
+        MockERC20(token1).mint(address(this), 10 ether);
+        IERC20(token0).transfer(address(pair), 10 ether);
+        IERC20(token1).transfer(address(pair), 10 ether);
+        pair.mint(address(this));
 
         // Prepare for swap
         MockERC20(token0).mint(address(this), 1 ether);
@@ -53,6 +76,51 @@ contract PairTest is Test {
             10 ether - amountOut,
             "Reserve1 should be decreased by the swapped amount"
         );
+    }
+
+    function testBurnLiquidity() public {
+        // First, add some liquidity
+        MockERC20(token0).mint(address(this), 100 ether);
+        MockERC20(token1).mint(address(this), 100 ether);
+        IERC20(token0).transfer(address(pair), 100 ether);
+        IERC20(token1).transfer(address(pair), 100 ether);
+        uint liquidityMinted = pair.mint(address(this));
+
+        // Now, let's burn half of the liquidity
+        uint liquidityToBurn = liquidityMinted / 2;
+        pair.transfer(address(pair), liquidityToBurn);
+        (uint amount0, uint amount1) = pair.burn(address(this));
+
+        // Check that we received the correct amounts back, allowing for a small margin of error
+        assertApproxEqAbs(
+            amount0,
+            50 ether,
+            1000,
+            "Should have received approximately 50 ether of token0"
+        );
+        assertApproxEqAbs(
+            amount1,
+            50 ether,
+            1000,
+            "Should have received approximately 50 ether of token1"
+        );
+
+        // Check that reserves have been updated correctly, allowing for a small margin of error
+        (uint112 reserve0, uint112 reserve1, ) = pair.getReserves();
+        assertApproxEqAbs(
+            reserve0,
+            50 ether,
+            1000,
+            "Reserve0 should be approximately 50 ether"
+        );
+        assertApproxEqAbs(
+            reserve1,
+            50 ether,
+            1000,
+            "Reserve1 should be approximately 50 ether"
+        );
+
+        //Todo: handle the precision issue.
     }
 }
 
