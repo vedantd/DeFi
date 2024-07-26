@@ -1,5 +1,23 @@
 # X * Y = K Dex 
 
+## Spec
+## LP Token Calculation
+
+When providing liquidity, the amount of LP tokens minted is determined as follows:
+
+1. **Initial Liquidity Provision**: If no liquidity exists in the pool (`totalSupply` is 0):
+   - The liquidity provided is calculated as:
+     \[
+     \text{liquidity} = \sqrt{\text{amount0} \times \text{amount1}} - \text{MINIMUM\_LIQUIDITY}
+     \]
+   - The `MINIMUM_LIQUIDITY` (1000 LP tokens) is permanently locked.
+
+2. **Subsequent Liquidity Provision**: If liquidity already exists:
+   - The liquidity provided is calculated based on the smaller ratio of the added amounts to the current reserves:
+     \[
+     \text{liquidity} = \min\left(\frac{\text{amount0} \times \text{totalSupply}}{\text{reserve0}}, \frac{\text{amount1} \times \text{totalSupply}}{\text{reserve1}}\right)
+     \]
+
 ## Project Progress
 
 ![Progress](https://progress-bar.dev/25/?width=500)
@@ -34,20 +52,9 @@ This project follows Test-Driven Development principles, ensuring high code qual
 | Factory Contract | Pending |
 | Router Contract | Pending |
 
-### Testing and Optimization
-
-| Task | Status |
-|------|--------|
-| Basic Pair Tests | Completed |
-| x * y = k Curve Tests | In Progress |
-| Swap Function Tests | In Progress |
-| Factory Contract Tests | Pending |
-| Router Contract Tests | Pending |
-| Gas Optimization | Pending |
-
 ## Detailed Progress
 
-### 1. Initial Setup (Completed)
+### 1. Initial contracts (Completed)
 - Set up the project using Foundry
 - Created basic contract structure for `Pair.sol`
 - Implemented constructor and initialize function
@@ -87,38 +94,10 @@ This project follows Test-Driven Development principles, ensuring high code qual
 
 This project aims to create a functional clone of Uniswap V2, focusing on the core x * y = k mechanism and building additional features on top of this foundation.
 
-## Tech Stack
-
-- Solidity
-- Foundry (Forge & Cast)
-- OpenZeppelin Contracts
-
-## Resources
-
-- Uniswap V2 Whitepaper
-- Uniswap V2 Core Contracts
-- Foundry Documentation
-
 ## License
 
 This project is licensed under the MIT License - see the LICENSE.md file for details.
 
 
-## Additional Information
 
-## LP Token Calculation
 
-When providing liquidity, the amount of LP tokens minted is determined as follows:
-
-1. **Initial Liquidity Provision**: If no liquidity exists in the pool (`totalSupply` is 0):
-   - The liquidity provided is calculated as:
-     \[
-     \text{liquidity} = \sqrt{\text{amount0} \times \text{amount1}} - \text{MINIMUM\_LIQUIDITY}
-     \]
-   - The `MINIMUM_LIQUIDITY` (1000 LP tokens) is permanently locked.
-
-2. **Subsequent Liquidity Provision**: If liquidity already exists:
-   - The liquidity provided is calculated based on the smaller ratio of the added amounts to the current reserves:
-     \[
-     \text{liquidity} = \min\left(\frac{\text{amount0} \times \text{totalSupply}}{\text{reserve0}}, \frac{\text{amount1} \times \text{totalSupply}}{\text{reserve1}}\right)
-     \]
