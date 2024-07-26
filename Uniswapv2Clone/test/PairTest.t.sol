@@ -78,6 +78,17 @@ contract PairTest is Test {
         );
     }
 
+    function calculateSwapOutput(
+        uint amountIn,
+        uint reserveIn,
+        uint reserveOut
+    ) internal pure returns (uint amountOut) {
+        uint amountInWithFee = amountIn * 997;
+        uint numerator = amountInWithFee * reserveOut;
+        uint denominator = reserveIn * 1000 + amountInWithFee;
+        amountOut = numerator / denominator;
+    }
+
     function testBurnLiquidity() public {
         // First, add some liquidity
         MockERC20(token0).mint(address(this), 100 ether);
@@ -121,6 +132,47 @@ contract PairTest is Test {
         );
 
         //Todo: handle the precision issue.
+    }
+
+    function testSwapMaintainsInvariant() public {
+        // Add initial liquidity
+        MockERC20(token0).mint(address(this), 100 ether);
+        MockERC20(token1).mint(address(this), 100 ether);
+        IERC20(token0).transfer(address(pair), 100 ether);
+        IERC20(token1).transfer(address(pair), 100 ether);
+        pair.mint(address(this));
+
+        // Record initial reserves
+        (uint112 reserve0Before, uint112 reserve1Before, ) = pair.getReserves();
+        uint kBefore = uint(reserve0Before) * uint(reserve1Before);
+
+        // Prepare for swap
+        MockERC20(token0).mint(address(this), 10 ether);
+        IERC20(token0).transfer(address(pair), 10 ether);
+
+        // Calculate expected output
+        uint amountOut = calculateSwapOutput(
+            10 ether,
+            reserve0Before,
+            reserve1Before
+        );
+
+        // Perform swap
+        pair.swap(0, amountOut, address(this));
+
+        // Check reserves after swap
+        (uint112 reserve0After, uint112 reserve1After, ) = pair.getReserves();
+        uint kAfter = uint(reserve0After) * uint(reserve1After);
+
+        // Check that k has increased (due to fees)
+        assertGt(kAfter, kBefore, "K should increase after swap due to fees");
+
+        // Check that k hasn't increased too much (max increase should be 0.3%)
+        assertLe(
+            kAfter,
+            (kBefore * 1003) / 1000,
+            "K shouldn't increase by more than 0.3%"
+        );
     }
 }
 

@@ -102,3 +102,23 @@ This project aims to create a functional clone of Uniswap V2, focusing on the co
 ## License
 
 This project is licensed under the MIT License - see the LICENSE.md file for details.
+
+
+## Additional Information
+
+## LP Token Calculation
+
+When providing liquidity, the amount of LP tokens minted is determined as follows:
+
+1. **Initial Liquidity Provision**: If no liquidity exists in the pool (`totalSupply` is 0):
+   - The liquidity provided is calculated as:
+     \[
+     \text{liquidity} = \sqrt{\text{amount0} \times \text{amount1}} - \text{MINIMUM\_LIQUIDITY}
+     \]
+   - The `MINIMUM_LIQUIDITY` (1000 LP tokens) is permanently locked.
+
+2. **Subsequent Liquidity Provision**: If liquidity already exists:
+   - The liquidity provided is calculated based on the smaller ratio of the added amounts to the current reserves:
+     \[
+     \text{liquidity} = \min\left(\frac{\text{amount0} \times \text{totalSupply}}{\text{reserve0}}, \frac{\text{amount1} \times \text{totalSupply}}{\text{reserve1}}\right)
+     \]
