@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
+import "./interfaces/IV2LPToken.sol";
 
-contract V2LPToken {
+contract V2LPToken is IV2LPToken {
     string public constant name = "V2 LP Token";
     string public constant symbol = "V2-LP";
     uint8 public constant decimals = 18;
@@ -14,9 +15,6 @@ contract V2LPToken {
     bytes32 public constant PERMIT_TYPEHASH =
         0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9;
     mapping(address => uint) public nonces;
-
-    event Approval(address indexed owner, address indexed spender, uint value);
-    event Transfer(address indexed from, address indexed to, uint value);
 
     constructor() {
         uint chainId;
