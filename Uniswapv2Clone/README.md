@@ -13,7 +13,7 @@ Factory:
 This is the factory that produces pairs and keep track of data related to pairs.
 
 
-
+We are going to try Test driven developement with this project.
 Implementation:
 1. Define and create interface for pair. 
 2. Implement the xy = k formula for a pair, tests.
