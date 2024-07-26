@@ -35,6 +35,19 @@ contract PairTest is Test {
         vm.expectRevert("UniswapV2: FORBIDDEN");
         pair.initialize(token0, token1);
     }
+
+    function testGetReserves() public {
+        pair.initialize(token0, token1);
+
+        // Initially, reserves should be zero
+        (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast) = pair
+            .getReserves();
+        assertEq(reserve0, 0);
+        assertEq(reserve1, 0);
+        assertEq(blockTimestampLast, 0);
+
+        // TODO: We'll add more tests here after implementing liquidity provision
+    }
 }
 
 // Mock ERC20 token for testing
