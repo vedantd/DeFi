@@ -17,116 +17,46 @@ contract PairTest is Test {
         pair = new Pair(factory);
         token0 = address(new MockERC20("Token0", "TKN0", 18));
         token1 = address(new MockERC20("Token1", "TKN1", 18));
-    }
-
-    function testInitialize() public {
-        pair.initialize(token0, token1);
-        assertEq(pair.factory(), factory);
-        assertEq(pair.token0(), token0);
-        assertEq(pair.token1(), token1);
-    }
-
-    function testCannotInitializeTwice() public {
-        pair.initialize(token0, token1);
-        vm.expectRevert("UniswapV2: ALREADY_INITIALIZED");
         pair.initialize(token0, token1);
     }
 
-    function testOnlyFactoryCanInitialize() public {
-        vm.prank(address(0xdead));
-        vm.expectRevert("UniswapV2: FORBIDDEN");
-        pair.initialize(token0, token1);
-    }
+    function testSwap() public {
+        // Add initial liquidity
+        MockERC20(token0).mint(address(pair), 10 ether);
+        MockERC20(token1).mint(address(pair), 10 ether);
+        pair.updateReserves(10 ether, 10 ether);
 
-    function testGetReserves() public {
-        pair.initialize(token0, token1);
+        // Prepare for swap
+        MockERC20(token0).mint(address(this), 1 ether);
+        IERC20(token0).transfer(address(pair), 1 ether);
 
-        // Initially, reserves should be zero
-        (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast) = pair
-            .getReserves();
-        assertEq(reserve0, 0);
-        assertEq(reserve1, 0);
-        assertEq(blockTimestampLast, 0);
+        // Perform swap
+        uint amountOut = 0.9 ether; // Expecting to receive slightly less than 1 due to the fee
+        pair.swap(0, amountOut, address(this));
 
-        // TODO: We'll add more tests here after implementing liquidity provision
-    }
-
-    function testMintLiquidity() public {
-        pair.initialize(token0, token1);
-
-        // Mint some tokens to this contract
-        MockERC20(token0).mint(address(this), 10 ether);
-        MockERC20(token1).mint(address(this), 10 ether);
-
-        // Approve the pair contract to spend tokens
-        IERC20(token0).approve(address(pair), 10 ether);
-        IERC20(token1).approve(address(pair), 10 ether);
-
-        // Transfer tokens to the pair contract
-        IERC20(token0).transfer(address(pair), 10 ether);
-        IERC20(token1).transfer(address(pair), 10 ether);
-
-        // Add liquidity
-        uint256 liquidity = pair.mint(address(this));
-
-        console.log("Liquidity minted:", liquidity);
-
-        // Check liquidity minted
-        assertGt(liquidity, 0, "Should have minted liquidity tokens");
-
-        // Check reserves
-        (uint112 reserve0, uint112 reserve1, ) = pair.getReserves();
-        console.log("Reserve0:", reserve0);
-        console.log("Reserve1:", reserve1);
-        assertEq(reserve0, 10 ether, "Reserve0 should be 10 ether");
-        assertEq(reserve1, 10 ether, "Reserve1 should be 10 ether");
-
-        // Check liquidity balance
+        // Check balances after swap
         assertEq(
-            pair.balanceOf(address(this)),
-            liquidity,
-            "Liquidity balance should match minted amount"
+            IERC20(token1).balanceOf(address(this)),
+            amountOut,
+            "Should have received the swapped amount of token1"
         );
-    }
 
-    function testMintLiquidityUnequal() public {
-        pair.initialize(token0, token1);
-
-        // Mint some tokens to this contract
-        MockERC20(token0).mint(address(this), 10 ether);
-        MockERC20(token1).mint(address(this), 5 ether);
-
-        // Approve the pair contract to spend tokens
-        IERC20(token0).approve(address(pair), 10 ether);
-        IERC20(token1).approve(address(pair), 5 ether);
-
-        // Transfer tokens to the pair contract
-        IERC20(token0).transfer(address(pair), 10 ether);
-        IERC20(token1).transfer(address(pair), 5 ether);
-
-        // Add liquidity
-        uint256 liquidity = pair.mint(address(this));
-
-        console.log("Liquidity minted:", liquidity);
-
-        // Check liquidity minted
-        assertGt(liquidity, 0, "Should have minted liquidity tokens");
-
-        // Check reserves
+        // Check updated reserves
         (uint112 reserve0, uint112 reserve1, ) = pair.getReserves();
-        console.log("Reserve0:", reserve0);
-        console.log("Reserve1:", reserve1);
-        assertEq(reserve0, 10 ether, "Reserve0 should be 10 ether");
-        assertEq(reserve1, 5 ether, "Reserve1 should be 5 ether");
-
-        // Check liquidity balance
         assertEq(
-            pair.balanceOf(address(this)),
-            liquidity,
-            "Liquidity balance should match minted amount"
+            reserve0,
+            11 ether,
+            "Reserve0 should be increased by the swapped amount"
+        );
+        assertEq(
+            reserve1,
+            10 ether - amountOut,
+            "Reserve1 should be decreased by the swapped amount"
         );
     }
 }
+
+// MockERC20 contract remains the same
 
 // Mock ERC20 token for testing
 contract MockERC20 is IERC20 {

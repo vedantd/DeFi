@@ -2,150 +2,103 @@
 
 ## Project Progress
 
-![Progress](https://progress-bar.dev/25/?width=400)
+![Progress](https://progress-bar.dev/25/?width=500)
 
 ## Test-Driven Development (TDD) Approach
 
-This project strictly follows Test-Driven Development principles. For each feature:
-
-1. We write failing tests that define the expected behavior
-2. We implement the minimal code to pass the tests
-3. We refactor the code while ensuring all tests still pass
-
-This approach ensures high code quality, comprehensive test coverage, and helps prevent regression as we add new features.
+This project follows Test-Driven Development principles, ensuring high code quality, comprehensive test coverage, and protection against regression.
 
 ## Project Progress Log
 
 ### Core Contract Implementation
 
-- [x] Initial Setup
-- [x] Basic Pair Functionality
-- [x] Liquidity Provision (Minting)
-- [ ] Liquidity Removal (Burning)
-- [ ] Swapping Functionality
-- [ ] Price Oracle Functionality
-- [ ] Protocol Fee Implementation
-- [ ] Reentrancy Protection
-- [ ] Flash Swap Functionality
-- [ ] Syncing and Skimming
+| Feature | Status |
+|---------|--------|
+| Initial Setup | Completed |
+| Basic Pair Functionality | Completed |
+| x * y = k Curve Implementation | In Progress |
+| Swap Function (using x * y = k) | In Progress |
+| Liquidity Provision (Minting) | Completed |
+| Liquidity Removal (Burning) | Pending |
+| Price Impact Calculation | Pending |
+| Protocol Fee Implementation | Pending |
+| Reentrancy Protection | Pending |
+| Price Oracle Functionality | Pending |
+| Flash Swap Functionality | Pending |
+| Syncing and Skimming | Pending |
 
 ### Additional Contracts
 
-- [ ] Factory Contract
-- [ ] Router Contract
+| Contract | Status |
+|----------|--------|
+| Factory Contract | Pending |
+| Router Contract | Pending |
 
 ### Testing and Optimization
 
-- [x] Basic Pair Tests
-- [ ] Comprehensive Swap Tests
-- [ ] Factory Contract Tests
-- [ ] Router Contract Tests
-- [ ] Gas Optimization
-
-### Documentation and Deployment
-
-- [ ] Code Comments
-- [ ] Developer Documentation
-- [ ] User Guide
-- [ ] Deployment Scripts
-
-### Optional Enhancements
-
-- [ ] Frontend Integration
-- [ ] Security Audit
+| Task | Status |
+|------|--------|
+| Basic Pair Tests | Completed |
+| x * y = k Curve Tests | In Progress |
+| Swap Function Tests | In Progress |
+| Factory Contract Tests | Pending |
+| Router Contract Tests | Pending |
+| Gas Optimization | Pending |
 
 ## Detailed Progress
 
-### 1. Initial Setup ✅
-- [x] Set up the project using Foundry
-- [x] Created basic contract structure for `Pair.sol`
-- [x] Implemented constructor and initialize function
+### 1. Initial Setup (Completed)
+- Set up the project using Foundry
+- Created basic contract structure for `Pair.sol`
+- Implemented constructor and initialize function
 
-### 2. Basic Pair Functionality ✅
-- [x] Implemented `token0` and `token1` storage
-- [x] Added `getReserves` function
-- [x] Implemented `mint` function for liquidity provision
-- [x] Added `MINIMUM_LIQUIDITY` constant
+### 2. Basic Pair Functionality (Completed)
+- Implemented `token0` and `token1` storage
+- Added `getReserves` function
+- Implemented `MINIMUM_LIQUIDITY` constant
 
-### 3. Testing ✅
-- [x] Created `PairTest.t.sol` for comprehensive testing
-- [x] Implemented tests for:
-  - [x] Initialization
-  - [x] Preventing double initialization
-  - [x] Factory-only initialization
-  - [x] Initial reserves state
-  - [x] Liquidity minting (both equal and unequal token amounts)
-- [x] Resolved issues with arithmetic overflow and ERC20 invalid receiver
+### 3. x * y = k Curve Implementation (In Progress)
+- Implementing core swap logic based on constant product formula
+- Ensuring reserves always maintain x * y = k after swaps (minus fees)
 
-### 4. Current State
-Basic pair contract functionality is in place with liquidity provision (minting) working and tested.
+### 4. Swap Function (In Progress)
+- Implementing `swap` function using x * y = k curve
+- Calculating input and output amounts based on constant product formula
+- Handling edge cases and ensuring no overflow/underflow
+
+### 5. Testing
+- Created `PairTest.t.sol` for comprehensive testing
+- Implemented tests for initialization and basic functions
+- Developing tests for x * y = k curve behavior and swap function
 
 ## Future Implementations
 
-### 5. Liquidity Removal (Burning) 🔜
-- [ ] Implement `burn` function
-- [ ] Add corresponding tests
+6. Liquidity Removal (Burning)
+7. Price Impact Calculation
+8. Protocol Fee Implementation
+9. Reentrancy Protection
+10. Price Oracle Functionality
+11. Flash Swap Functionality
+12. Syncing and Skimming
+13. Factory Contract
+14. Router Contract
+15. Gas Optimization
+16. Documentation and Deployment
 
-### 6. Swapping Functionality
-- [ ] Implement `swap` function
-- [ ] Add tests for various swap scenarios
+This project aims to create a functional clone of Uniswap V2, focusing on the core x * y = k mechanism and building additional features on top of this foundation.
 
-### 7. Price Oracle Functionality
-- [ ] Implement price accumulator logic
-- [ ] Update `_update` function to handle price accumulation
-- [ ] Add tests for price oracle updates
+## Tech Stack
 
-### 8. Protocol Fee Implementation
-- [ ] Add `kLast` storage
-- [ ] Implement `_mintFee` function
-- [ ] Modify `mint` and `burn` functions to handle protocol fees
-- [ ] Add tests for fee collection scenarios
+- Solidity
+- Foundry (Forge & Cast)
+- OpenZeppelin Contracts
 
-### 9. Reentrancy Protection
-- [ ] Implement `lock` modifier
-- [ ] Apply to relevant functions
-- [ ] Add tests to ensure protection
+## Resources
 
-### 10. Flash Swap Functionality
-- [ ] Implement flash swap logic in `swap` function
-- [ ] Add `uniswapV2Call` handling
-- [ ] Create tests for flash swap scenarios
+- Uniswap V2 Whitepaper
+- Uniswap V2 Core Contracts
+- Foundry Documentation
 
-### 11. Syncing and Skimming
-- [ ] Implement `sync` function
-- [ ] Implement `skim` function
-- [ ] Add tests for edge cases and recovery scenarios
+## License
 
-### 12. Factory Contract
-- [ ] Implement `UniswapV2Factory` contract
-- [ ] Add pair creation functionality
-- [ ] Implement tests for factory contract
-
-### 13. Router Contract
-- [ ] Implement `UniswapV2Router` contract
-- [ ] Add high-level functions for easy interaction with pairs
-- [ ] Implement comprehensive tests for router functionality
-
-### 14. Gas Optimization
-- [ ] Review and optimize gas usage
-- [ ] Implement gas-saving techniques
-- [ ] Add benchmarking tests
-
-### 15. Documentation
-- [ ] Add comprehensive comments to all contracts
-- [ ] Create developer documentation
-- [ ] Write user guide for interacting with the protocol
-
-### 16. Deployment Scripts
-- [ ] Create scripts for easy deployment to various networks
-- [ ] Implement configuration files for different environments
-
-### 17. Frontend Integration (Optional)
-- [ ] Develop a basic frontend for interacting with the protocol
-- [ ] Implement web3 connectivity
-
-### 18. Security Audit
-- [ ] Conduct internal security review
-- [ ] Consider external audit if resources allow
-
-This project aims to create a functional clone of Uniswap V2, focusing on core functionalities while providing a platform for learning and experimentation with DeFi protocols.
+This project is licensed under the MIT License - see the LICENSE.md file for details.

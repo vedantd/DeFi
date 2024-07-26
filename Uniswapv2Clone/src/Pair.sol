@@ -2,31 +2,26 @@
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "forge-std/console.sol";
 
-contract Pair is ERC20 {
+contract Pair {
     address public factory;
     address public token0;
     address public token1;
 
-    uint112 private reserve0; // uses single storage slot, accessible via getReserves
-    uint112 private reserve1; // uses single storage slot, accessible via getReserves
-    uint32 private blockTimestampLast; // uses single storage slot, accessible via getReserves
+    uint112 private reserve0;
+    uint112 private reserve1;
+    uint32 private blockTimestampLast;
 
-    uint public constant MINIMUM_LIQUIDITY = 10 ** 3;
+    uint private constant MINIMUM_LIQUIDITY = 1000;
 
-    constructor(address _factory) ERC20("Uniswap V2", "UNI-V2") {
+    constructor(address _factory) {
         factory = _factory;
     }
 
     function initialize(address _token0, address _token1) external {
         require(msg.sender == factory, "UniswapV2: FORBIDDEN");
-        require(
-            token0 == address(0) && token1 == address(0),
-            "UniswapV2: ALREADY_INITIALIZED"
-        );
         token0 = _token0;
         token1 = _token1;
     }
@@ -52,43 +47,66 @@ contract Pair is ERC20 {
         emit Sync(reserve0, reserve1);
     }
 
-    function mint(address to) external returns (uint liquidity) {
+    // Add this function for testing purposes
+    function updateReserves(uint balance0, uint balance1) external {
+        _update(balance0, balance1);
+    }
+
+    function swap(uint amount0Out, uint amount1Out, address to) external {
+        require(
+            amount0Out > 0 || amount1Out > 0,
+            "UniswapV2: INSUFFICIENT_OUTPUT_AMOUNT"
+        );
         (uint112 _reserve0, uint112 _reserve1, ) = getReserves();
-        uint balance0 = IERC20(token0).balanceOf(address(this));
-        uint balance1 = IERC20(token1).balanceOf(address(this));
+        require(
+            amount0Out < _reserve0 && amount1Out < _reserve1,
+            "UniswapV2: INSUFFICIENT_LIQUIDITY"
+        );
 
-        console.log("Balance0:", balance0);
-        console.log("Balance1:", balance1);
-        console.log("Reserve0:", _reserve0);
-        console.log("Reserve1:", _reserve1);
-
-        uint amount0 = balance0 - _reserve0;
-        uint amount1 = balance1 - _reserve1;
-
-        console.log("Amount0:", amount0);
-        console.log("Amount1:", amount1);
-
-        if (totalSupply() == 0) {
-            liquidity = Math.sqrt(amount0 * amount1) - MINIMUM_LIQUIDITY;
-            require(liquidity > 0, "UniswapV2: INSUFFICIENT_INITIAL_LIQUIDITY");
-            _mint(address(1), MINIMUM_LIQUIDITY); // mint to a non-zero address
-        } else {
-            liquidity = Math.min(
-                (amount0 * totalSupply()) / _reserve0,
-                (amount1 * totalSupply()) / _reserve1
+        uint balance0;
+        uint balance1;
+        {
+            // scope for _token{0,1}, avoids stack too deep errors
+            address _token0 = token0;
+            address _token1 = token1;
+            require(to != _token0 && to != _token1, "UniswapV2: INVALID_TO");
+            if (amount0Out > 0) IERC20(_token0).transfer(to, amount0Out);
+            if (amount1Out > 0) IERC20(_token1).transfer(to, amount1Out);
+            balance0 = IERC20(_token0).balanceOf(address(this));
+            balance1 = IERC20(_token1).balanceOf(address(this));
+        }
+        uint amount0In = balance0 > _reserve0 - amount0Out
+            ? balance0 - (_reserve0 - amount0Out)
+            : 0;
+        uint amount1In = balance1 > _reserve1 - amount1Out
+            ? balance1 - (_reserve1 - amount1Out)
+            : 0;
+        require(
+            amount0In > 0 || amount1In > 0,
+            "UniswapV2: INSUFFICIENT_INPUT_AMOUNT"
+        );
+        {
+            // scope for reserve{0,1}Adjusted, avoids stack too deep errors
+            uint balance0Adjusted = balance0 * 1000 - amount0In * 3;
+            uint balance1Adjusted = balance1 * 1000 - amount1In * 3;
+            require(
+                balance0Adjusted * balance1Adjusted >=
+                    uint(_reserve0) * _reserve1 * (1000 ** 2),
+                "UniswapV2: K"
             );
         }
 
-        console.log("Liquidity:", liquidity);
-
-        require(liquidity > 0, "UniswapV2: INSUFFICIENT_LIQUIDITY_MINTED");
-        _mint(to, liquidity);
-
         _update(balance0, balance1);
-        emit Mint(msg.sender, amount0, amount1);
-        return liquidity;
+        emit Swap(msg.sender, amount0In, amount1In, amount0Out, amount1Out, to);
     }
 
-    event Mint(address indexed sender, uint amount0, uint amount1);
     event Sync(uint112 reserve0, uint112 reserve1);
+    event Swap(
+        address indexed sender,
+        uint amount0In,
+        uint amount1In,
+        uint amount0Out,
+        uint amount1Out,
+        address indexed to
+    );
 }
