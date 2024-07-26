@@ -1,66 +1,22 @@
-## Foundry
+Spec:
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+Contracts
 
-Foundry consists of:
+LPToken:
+Contract that keeps track of ownership in a pool issued when liquidity is provided my user.
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+Pair:
+Defines a specififcation of a liquidity pair and actions like swapping, providing liquidity that are permormed on this pair. 
 
-## Documentation
 
-https://book.getfoundry.sh/
+Factory:
+This is the factory that produces pairs and keep track of data related to pairs.
 
-## Usage
 
-### Build
 
-```shell
-$ forge build
-```
-
-### Test
-
-```shell
-$ forge test
-```
-
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+Implementation:
+1. Define and create interface for pair. 
+2. Implement the xy = k formula for a pair, tests.
+3. LP token issuance, tests.
+4. LP Token contract, tests.
+5. TODO//
