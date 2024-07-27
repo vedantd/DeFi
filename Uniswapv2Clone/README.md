@@ -5,7 +5,7 @@ This project is implementing a decentralized exchange (DEX) based on the constan
 
 ## Project Progress
 
-![Progress](https://progress-bar.dev/40/?width=500)
+![Progress](https://progress-bar.dev/70/?width=500)
 
 ## Implemented Features
 
@@ -25,27 +25,39 @@ This project is implementing a decentralized exchange (DEX) based on the constan
    - ERC20 functionality
    - Minting and burning mechanisms
 
+4. **Router Contract**
+   - Add liquidity
+   - Remove liquidity
+   - Swap exact tokens for tokens
+   - Manual gas limit estimation for transactions
+
+5. **Frontend Interface**
+   - Create pairs
+   - Add liquidity
+   - Swap tokens
+   - Fetch and display liquidity information
+
 ## Current Focus
 
-- Implementing Router contract
 - Enhancing swap functionality
 - Adding more complex liquidity operations
+- Improving frontend user experience
 
 ## Test Suite
 
 - Comprehensive tests for Factory contract
 - Tests for basic Pair contract functionality
 - Tests for liquidity provision and swaps
+- Tests for Router contract functions
 
 ## Upcoming Tasks
 
-1. Complete Router contract implementation
-2. Enhance error handling and input validation
-3. Implement price impact calculation
-4. Add flash swap functionality
-5. Implement price oracle
-6. Optimize gas usage
-7. Enhance documentation
+1. Enhance error handling and input validation
+2. Implement price impact calculation
+3. Add flash swap functionality
+4. Implement price oracle
+5. Optimize gas usage
+6. Enhance documentation
 
 ## LP Token Calculation
 
